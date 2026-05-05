@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer data. One row per customer."
+    columns:
+      - name: customer_id
+        description: "Primary key. Unique identifier for each customer."
+        tests:
+          - not_null
+          - unique
+
+      - name: email
+        description: "Customer email address. Should never be empty."
+        tests:
+          - not_null
+
+      - name: country
+        description: "Country of the customer."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['UK', 'US', 'DE', 'FR', 'AU']
+
+      - name: acquisition_channel
+        description: "Channel through which the customer was acquired."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['organic', 'paid_search', 'paid_social', 'referral', 'email']
+
+      - name: is_active
+        description: "Whether the customer is currently active."
+        tests:
+          - not_null
+
+  - name: stg_applications
+    description: "Cleaned credit card applications. One row per application."
+    columns:
+      - name: application_id
+        description: "Primary key. Unique identifier for each application."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Foreign key to stg_customers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+      - name: decision
+        description: "Outcome of the application."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['approved', 'rejected']
+
+  - name: stg_transactions
+    description: "Cleaned transaction data. One row per transaction."
+    columns:
+      - name: transaction_id
+        description: "Primary key. Unique identifier for each transaction."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Foreign key to stg_customers."
+        tests:
+          - not_null
+
+      - name: amount
+        description: "Transaction amount in GBP. Always positive."
+        tests:
+          - not_null
+
+      - name: status
+        description: "Status of the transaction."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'pending', 'failed', 'refunded']
+
+      - name: merchant_category
+        description: "Category of the merchant."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['groceries', 'dining', 'transport', 'entertainment',
+                       'shopping', 'utilities', 'travel', 'health']
+
+  - name: stg_credit_limit_history
+    description: "Cleaned credit limit history. One row per change event."
+    columns:
+      - name: history_id
+        description: "Primary key. Unique identifier for each credit limit change."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Foreign key to stg_customers."
+        tests:
+          - not_null
+
+      - name: credit_limit
+        description: "Credit limit amount in GBP."
+        tests:
+          - not_null
+
+      - name: change_reason
+        description: "Reason for the credit limit change."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['initial_approval', 'good_standing',
+                       'requested_increase', 'annual_review']

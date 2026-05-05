@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "One row per customer. Grain: customer_id."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        tests:
+          - not_null
+          - unique
+
+      - name: email
+        description: "Customer email address."
+        tests:
+          - not_null
+
+      - name: country
+        description: "Country of the customer."
+        tests:
+          - not_null
+
+      - name: is_active
+        description: "Whether the customer is active."
+        tests:
+          - not_null
+
+      - name: signup_date
+        description: "Date the customer signed up."
+        tests:
+          - not_null
+          - assert_date_not_future
+
+  - name: dim_date
+    description: "One row per calendar day. Grain: date_id."
+    columns:
+      - name: date_id
+        description: "Primary key. Format YYYYMMDD."
+        tests:
+          - not_null
+          - unique
+
+      - name: full_date
+        description: "The calendar date."
+        tests:
+          - not_null
+
+  - name: fct_applications
+    description: "One row per application. Grain: application_id."
+    columns:
+      - name: application_id
+        description: "Primary key."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Foreign key to dim_customers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: decision
+        description: "Application decision."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['approved', 'rejected']
+
+      - name: applied_at
+        description: "When the customer applied."
+        tests:
+          - not_null
+          - assert_date_not_future
+
+      - name: decided_at
+        description: "When the decision was made."
+        tests:
+          - not_null
+
+  - name: fct_transactions
+    description: "One row per transaction. Grain: transaction_id."
+    columns:
+      - name: transaction_id
+        description: "Primary key."
+        tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: "Foreign key to dim_customers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: amount
+        description: "Transaction amount in GBP."
+        tests:
+          - not_null
+          - assert_column_is_positive
+          - assert_column_within_range:
+              min_value: 0
+              max_value: 10000
+
+      - name: status
+        description: "Transaction status."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'pending', 'failed', 'refunded']
+
+      - name: transaction_date
+        description: "Date of the transaction."
+        tests:
+          - not_null
+          - assert_date_not_future

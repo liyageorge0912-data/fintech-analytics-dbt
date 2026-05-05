@@ -1,0 +1,48 @@
+semantic_models:
+  - name: applications
+    description: "Semantic model for applications fact table."
+    model: ref('fct_applications')
+
+    defaults:
+      agg_time_dimension: applied_at
+
+    entities:
+      - name: application
+        type: primary
+        expr: application_id
+
+      - name: customer
+        type: foreign
+        expr: customer_id
+
+    measures:
+      - name: application_count
+        agg: count
+        expr: application_id
+        description: "Total number of applications."
+        create_metric: false
+
+      - name: approved_applications
+        agg: sum
+        expr: is_approved
+        description: "Number of approved applications."
+        create_metric: false
+
+    dimensions:
+      - name: applied_at
+        type: time
+        type_params:
+          time_granularity: day
+        expr: applied_at
+
+      - name: decision
+        type: categorical
+
+      - name: country
+        type: categorical
+
+      - name: acquisition_channel
+        type: categorical
+
+      - name: employment_status
+        type: categorical

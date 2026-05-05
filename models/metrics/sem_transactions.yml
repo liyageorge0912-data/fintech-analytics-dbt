@@ -1,0 +1,54 @@
+semantic_models:
+  - name: transactions
+    description: "Semantic model for transactions fact table."
+    model: ref('fct_transactions')
+
+    defaults:
+      agg_time_dimension: transaction_date
+
+    entities:
+      - name: transaction
+        type: primary
+        expr: transaction_id
+
+      - name: customer
+        type: foreign
+        expr: customer_id
+
+    measures:
+      - name: transaction_amount
+        agg: sum
+        expr: amount
+        description: "Total transaction amount in GBP."
+        agg_time_dimension: transaction_date
+        create_metric: false
+
+      - name: transaction_count
+        agg: count
+        expr: transaction_id
+        description: "Total number of transactions."
+        agg_time_dimension: transaction_date
+        create_metric: false
+
+      - name: distinct_customers
+        agg: count_distinct
+        expr: customer_id
+        description: "Number of distinct customers who transacted."
+        agg_time_dimension: transaction_date
+        create_metric: false
+
+    dimensions:
+      - name: transaction_date
+        type: time
+        type_params:
+          time_granularity: day
+        expr: transaction_date
+
+      - name: merchant_category
+        type: categorical
+
+      - name: status
+        type: categorical
+
+      - name: country
+        type: categorical

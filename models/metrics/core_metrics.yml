@@ -1,0 +1,24 @@
+metrics:
+  - name: total_revenue
+    description: "Total transaction amount in GBP."
+    type: simple
+    label: "Total Revenue"
+    type_params:
+      measure:
+        name: transaction_amount
+
+  - name: total_transactions
+    description: "Total number of transactions."
+    type: simple
+    label: "Total Transactions"
+    type_params:
+      measure:
+        name: transaction_count
+
+  - name: monthly_active_customers
+    description: "Distinct customers with at least one transaction."
+    type: simple
+    label: "Monthly Active Customers"
+    type_params:
+      measure:
+        name: distinct_customers
