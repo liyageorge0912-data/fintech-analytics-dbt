@@ -168,7 +168,6 @@ Three tiers of testing across 59 automated tests:
 
 
 
-Notion case study: \[link]
-
+Notion case study: https://www.notion.so/Fintech-Credit-Card-Analytics-Platform-dbt-Snowflake-GitHub-Actions-357658b8997e807daba7e1ecc1ccac04?source=copy_link
 
 
